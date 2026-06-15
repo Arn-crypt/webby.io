@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lover</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="Design.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">A soft little love space</p>
+        <h1>My Lover</h1>
+      </div>
+
+      <nav class="tab-row" role="tablist" aria-label="Editable love tabs">
+        <div class="tab-chip active" role="tab" id="tab-love" data-tab="love" aria-selected="true" aria-controls="love" tabindex="0">I Love You</div>
+        <div class="tab-chip" role="tab" id="tab-moments" data-tab="moments" aria-selected="false" aria-controls="moments" tabindex="-1">Sweet Moments</div>
+        <div class="tab-chip" role="tab" id="tab-forever" data-tab="forever" aria-selected="false" aria-controls="forever" tabindex="-1">Forever</div>
+      </nav>
+    </header>
+
+    <main class="layout">
+      <section class="panel note-panel" id="notePanel">
+        <p class="panel-label">Love note</p>
+        <h2>Write your sweetest message</h2>
+        <textarea id="loveText" aria-label="Love message">Every little moment with you feels like a soft pink dream. I love you more than words can say. 💖</textarea>
+
+      </section>
+
+      <section class="panel photo-panel" id="photoPanel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-label">Photo gallery</p>
+            <h2>Upload your favorite pictures</h2>
+          </div>
+          <label class="upload-btn" for="photoInput">Upload photos
+            <input id="photoInput" type="file" accept="image/*" multiple hidden />
+          </label>
+        </div>
+
+        <div class="photo-controls">
+          <label>
+            Photo style
+            <select id="photoStyle">
+              <option value="square">Sweet square</option>
+              <option value="landscape">Wide landscape</option>
+              <option value="portrait">Tall portrait</option>
+            </select>
+          </label>
+          <button id="shuffleBtn" type="button">Shuffle sizes</button>
+        </div>
+
+        <div id="photoGrid" class="photo-grid"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const galleryGrid = document.getElementById('photoGrid');
+    const galleryInput = document.getElementById('photoInput');
+    const galleryStyle = document.getElementById('photoStyle');
+    const shuffleBtn = document.getElementById('shuffleBtn');
+
+    window.galleryGrid = galleryGrid;
+    window.galleryInput = galleryInput;
+    window.galleryStyle = galleryStyle;
+
+    function createPhotoCard(fileOrItem, style = fileOrItem.style || galleryStyle.value) {
+      const card = document.createElement('article');
+      card.className = `photo-card ${style}`;
+
+      const image = document.createElement('img');
+      image.alt = fileOrItem.label || 'Lover photo';
+
+      if (fileOrItem.src) {
+        image.src = fileOrItem.src;
+      } else {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          image.src = event.target.result;
+        };
+        reader.readAsDataURL(fileOrItem);
+      }
+
+      const caption = document.createElement('div');
+      caption.className = 'photo-caption';
+      caption.innerHTML = `<strong>${fileOrItem.label || 'Lovely memory'}</strong><span>${style}</span>`;
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'remove-btn';
+      removeBtn.textContent = '✕';
+      removeBtn.addEventListener('click', () => card.remove());
+
+      card.appendChild(image);
+      card.appendChild(caption);
+      card.appendChild(removeBtn);
+      galleryGrid.appendChild(card);
+    }
+
+    window.createPhotoCard = createPhotoCard;
+
+    galleryInput.addEventListener('change', (event) => {
+      const files = Array.from(event.target.files || []);
+      files.forEach((file) => {
+        createPhotoCard(file, galleryStyle.value);
+      });
+      event.target.value = '';
+    });
+
+    shuffleBtn.addEventListener('click', () => {
+      const cards = Array.from(document.querySelectorAll('.photo-card'));
+      const styles = ['square', 'landscape', 'portrait'];
+      cards.forEach((card, index) => {
+        const nextStyle = styles[(index + 1) % styles.length];
+        card.classList.remove('square', 'landscape', 'portrait');
+        card.classList.add(nextStyle);
+        card.querySelector('.photo-caption span').textContent = nextStyle;
+      });
+    });
+  </script>
+  <script src="function.js"></script>
+</body>
+</html>
